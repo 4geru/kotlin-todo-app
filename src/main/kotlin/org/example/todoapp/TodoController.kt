@@ -1,20 +1,25 @@
 package org.example.todoapp
 
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
-
-data class Task(val id: String?, val text: String)
+import org.springframework.web.bind.annotation.*
 
 @RestController
-class TodoController {
+class TodoController(val service: TaskService) {
     @GetMapping("/")
-    fun index(@RequestParam("name") name: String) = "Hello, $name-san!"
+    fun index(): List<Task> = service.findTasks()
+
+    @GetMapping("/{id}")
+    fun index(@PathVariable id: String): List<Task> =
+        service.findTaskById(id)
 
     @GetMapping("/tasks")
-    fun index() = listOf(
+    fun tasks() = listOf(
         Task("1", "Hello!"),
         Task("2", "Bonjour!"),
         Task("3", "Privet!"),
     )
+
+    @PostMapping("/")
+    fun post(@RequestBody task: Task) {
+        service.save(task)
+    }
 }
